@@ -27,7 +27,13 @@ app.use(express.json());
 // Health check: indica también el estado de la DB para diagnóstico.
 app.get('/api/health', (req, res) => {
   const dbReady = mongoose.connection.readyState === 1;
-  res.json({ ok: true, db: dbReady ? 'conectada' : 'desconectada', port: PORT });
+  res.json({
+    ok: true,
+    db: dbReady ? 'conectada' : 'desconectada',
+    port: PORT,
+    mongoUriSet: Boolean(process.env.MONGODB_URI),
+    jwtSet: Boolean(process.env.JWT_SECRET),
+  });
 });
 app.use('/api/auth', authRoutes);
 app.use('/api/games', gameRoutes);
