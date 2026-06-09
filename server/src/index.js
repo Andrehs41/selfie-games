@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import mongoose from 'mongoose';
 import { connectDB } from './config/db.js';
 import authRoutes from './routes/auth.js';
 import gameRoutes from './routes/games.js';
@@ -23,7 +24,11 @@ app.use(
 );
 app.use(express.json());
 
-app.get('/api/health', (req, res) => res.json({ ok: true }));
+// Health check: indica también el estado de la DB para diagnóstico.
+app.get('/api/health', (req, res) => {
+  const dbReady = mongoose.connection.readyState === 1;
+  res.json({ ok: true, db: dbReady ? 'conectada' : 'desconectada', port: PORT });
+});
 app.use('/api/auth', authRoutes);
 app.use('/api/games', gameRoutes);
 app.use('/api/admin', adminRoutes);
@@ -31,11 +36,10 @@ app.use('/api/admin', adminRoutes);
 const PORT = process.env.PORT || 4000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/selfie-games';
 
-connectDB(MONGODB_URI)
-  .then(() => {
-    app.listen(PORT, () => console.log(`🚀 API escuchando en http://localhost:${PORT}`));
-  })
-  .catch((err) => {
-    console.error('❌ No se pudo conectar a MongoDB:', err.message);
-    process.exit(1);
-  });
+// El servidor escucha SIEMPRE (aunque Mongo falle), así /api/health responde y
+// podemos diagnosticar. La conexión a la DB ocurre aparte y no tumba el proceso.
+app.listen(PORT, '0.0.0.0', () => console.log(`🚀 API escuchando en puerto ${PORT}`));
+
+connectDB(MONGODB_URI).catch((err) =>
+  console.error('❌ No se pudo conectar a MongoDB:', err.message)
+);
