@@ -2,7 +2,6 @@
   "name": "selfie-games",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
   "description": "Raíz del repo. Despliega el backend (server/) en Hostinger (preset Express, archivo de entrada server/src/index.js). Las dependencias viven aquí para que el runtime de Hostinger las encuentre en el node_modules de la raíz.",
   "engines": {
     "node": ">=18"

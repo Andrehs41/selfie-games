@@ -1,8 +1,8 @@
-import jwt from 'jsonwebtoken';
-import { User } from '../models/User.js';
+const jwt = require('jsonwebtoken');
+const { User } = require('../models/User.js');
 
 // Verifica el JWT del header Authorization: Bearer <token> y carga el usuario.
-export async function requireAuth(req, res, next) {
+async function requireAuth(req, res, next) {
   try {
     const header = req.headers.authorization || '';
     const token = header.startsWith('Bearer ') ? header.slice(7) : null;
@@ -20,9 +20,11 @@ export async function requireAuth(req, res, next) {
 }
 
 // Debe ir DESPUÉS de requireAuth: exige que el usuario sea admin.
-export function requireAdmin(req, res, next) {
+function requireAdmin(req, res, next) {
   if (req.user?.role !== 'admin') {
     return res.status(403).json({ error: 'Acceso solo para administradores' });
   }
   next();
 }
+
+module.exports = { requireAuth, requireAdmin };

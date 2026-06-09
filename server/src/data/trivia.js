@@ -1,6 +1,6 @@
 // Preguntas de la trivia. `correct` es el índice (0-based) de la opción correcta.
 // NUNCA se envía `correct` al cliente: la respuesta se valida en el backend.
-export const TRIVIA_QUESTIONS = [
+const TRIVIA_QUESTIONS = [
   {
     id: 1,
     question: '¿Cuántos años llevamos en el mercado?',
@@ -81,7 +81,7 @@ function shuffle(arr) {
 // Cada opción lleva su índice original como `id`; la validación en el backend
 // compara ese id contra la respuesta correcta, así que mezclar no la rompe ni
 // revela cuál es la correcta.
-export function publicQuestions() {
+function publicQuestions() {
   const questions = TRIVIA_QUESTIONS.map(({ id, question, options }) => ({
     id,
     question,
@@ -89,3 +89,5 @@ export function publicQuestions() {
   }));
   return shuffle(questions);
 }
+
+module.exports = { TRIVIA_QUESTIONS, publicQuestions };

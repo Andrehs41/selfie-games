@@ -4,7 +4,7 @@
 // controlar inventario de premios sin tocar el resto del código.
 // Orden = posición física en la rueda. Los 3 "Sigue intentando" se intercalan
 // (posiciones 2, 5 y 8) para que queden repartidos y no en un mismo bloque.
-export const ROULETTE_SEGMENTS = [
+const ROULETTE_SEGMENTS = [
   { id: 1, label: 'Shampoo Viajero', type: 'win', weight: 1 },
   { id: 2, label: 'Sigue intentando', type: 'retry', weight: 1 },
   { id: 3, label: 'Acondicionador Viajero', type: 'win', weight: 1 },
@@ -16,12 +16,12 @@ export const ROULETTE_SEGMENTS = [
 ];
 
 // Vista pública (sin pesos) para que el front dibuje la rueda.
-export function publicSegments() {
+function publicSegments() {
   return ROULETTE_SEGMENTS.map(({ id, label, type }) => ({ id, label, type }));
 }
 
 // El servidor decide el segmento ganador según los pesos.
-export function pickSegmentIndex() {
+function pickSegmentIndex() {
   const total = ROULETTE_SEGMENTS.reduce((sum, s) => sum + s.weight, 0);
   let r = Math.random() * total;
   for (let i = 0; i < ROULETTE_SEGMENTS.length; i++) {
@@ -30,3 +30,5 @@ export function pickSegmentIndex() {
   }
   return ROULETTE_SEGMENTS.length - 1;
 }
+
+module.exports = { ROULETTE_SEGMENTS, publicSegments, pickSegmentIndex };

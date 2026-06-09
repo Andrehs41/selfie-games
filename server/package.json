@@ -2,7 +2,6 @@
   "name": "selfie-games-server",
   "version": "1.0.0",
   "description": "Backend de la activación By Mariana Zapata (auth + juegos)",
-  "type": "module",
   "main": "src/index.js",
   "engines": {
     "node": ">=18"

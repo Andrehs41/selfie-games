@@ -1,6 +1,6 @@
-import { Router } from 'express';
-import { requireAuth, requireAdmin } from '../middleware/auth.js';
-import { listUsers, stats, exportCsv } from '../controllers/adminController.js';
+const { Router } = require('express');
+const { requireAuth, requireAdmin } = require('../middleware/auth.js');
+const { listUsers, stats, exportCsv } = require('../controllers/adminController.js');
 
 const router = Router();
 
@@ -10,4 +10,4 @@ router.get('/users', listUsers);
 router.get('/users.csv', exportCsv);
 router.get('/stats', stats);
 
-export default router;
+module.exports = router;

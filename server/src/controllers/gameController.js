@@ -1,14 +1,10 @@
-import { TRIVIA_QUESTIONS, publicQuestions } from '../data/trivia.js';
-import {
-  ROULETTE_SEGMENTS,
-  publicSegments,
-  pickSegmentIndex,
-} from '../data/roulette.js';
+const { TRIVIA_QUESTIONS, publicQuestions } = require('../data/trivia.js');
+const { ROULETTE_SEGMENTS, publicSegments, pickSegmentIndex } = require('../data/roulette.js');
 
 // --- TRIVIA ---
 
 // GET /api/games/trivia → preguntas sin la respuesta correcta.
-export function getTrivia(req, res) {
+function getTrivia(req, res) {
   return res.json({
     played: req.user.games.trivia.played,
     result: req.user.games.trivia,
@@ -18,7 +14,7 @@ export function getTrivia(req, res) {
 
 // POST /api/games/trivia { answers: { [questionId]: optionIndex } }
 // Valida en el servidor y guarda el puntaje (una sola vez).
-export async function submitTrivia(req, res) {
+async function submitTrivia(req, res) {
   const user = req.user;
   if (user.games.trivia.played) {
     return res.status(409).json({ error: 'Ya jugaste la trivia', result: user.games.trivia });
@@ -52,7 +48,7 @@ export async function submitTrivia(req, res) {
 // --- RULETA ---
 
 // GET /api/games/ruleta → segmentos para dibujar la rueda.
-export function getRuleta(req, res) {
+function getRuleta(req, res) {
   return res.json({
     played: req.user.games.ruleta.played,
     result: req.user.games.ruleta,
@@ -61,7 +57,7 @@ export function getRuleta(req, res) {
 }
 
 // POST /api/games/ruleta → el servidor decide el premio (una sola vez).
-export async function spinRuleta(req, res) {
+async function spinRuleta(req, res) {
   const user = req.user;
   if (user.games.ruleta.played) {
     return res.status(409).json({ error: 'Ya giraste la ruleta', result: user.games.ruleta });
@@ -86,3 +82,5 @@ export async function spinRuleta(req, res) {
     result: user.games.ruleta,
   });
 }
+
+module.exports = { getTrivia, submitTrivia, getRuleta, spinRuleta };

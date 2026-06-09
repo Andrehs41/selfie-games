@@ -1,7 +1,9 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
-export async function connectDB(uri) {
+async function connectDB(uri) {
   mongoose.set('strictQuery', true);
   await mongoose.connect(uri);
   console.log('✅ MongoDB conectado');
 }
+
+module.exports = { connectDB };

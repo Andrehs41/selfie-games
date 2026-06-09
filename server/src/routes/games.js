@@ -1,11 +1,11 @@
-import { Router } from 'express';
-import { requireAuth } from '../middleware/auth.js';
-import {
+const { Router } = require('express');
+const { requireAuth } = require('../middleware/auth.js');
+const {
   getTrivia,
   submitTrivia,
   getRuleta,
   spinRuleta,
-} from '../controllers/gameController.js';
+} = require('../controllers/gameController.js');
 
 const router = Router();
 
@@ -16,4 +16,4 @@ router.post('/trivia', submitTrivia);
 router.get('/ruleta', getRuleta);
 router.post('/ruleta', spinRuleta);
 
-export default router;
+module.exports = router;

@@ -1,7 +1,7 @@
-import { User } from '../models/User.js';
+const { User } = require('../models/User.js');
 
 // GET /api/admin/users → todos los usuarios (jugadores) con sus resultados.
-export async function listUsers(req, res) {
+async function listUsers(req, res) {
   const users = await User.find({ role: { $ne: 'admin' } }).sort({ createdAt: -1 }).lean();
   const data = users.map((u) => ({
     id: u._id,
@@ -16,7 +16,7 @@ export async function listUsers(req, res) {
 }
 
 // GET /api/admin/stats → métricas rápidas para el panel.
-export async function stats(req, res) {
+async function stats(req, res) {
   const notAdmin = { role: { $ne: 'admin' } };
   const total = await User.countDocuments(notAdmin);
   const triviaJugada = await User.countDocuments({ ...notAdmin, 'games.trivia.played': true });
@@ -31,7 +31,7 @@ const csvCell = (v) => {
 };
 
 // GET /api/admin/users.csv → exporta los leads + resultados.
-export async function exportCsv(req, res) {
+async function exportCsv(req, res) {
   const users = await User.find({ role: { $ne: 'admin' } }).sort({ createdAt: -1 }).lean();
   const headers = [
     'Nombre',
@@ -62,3 +62,5 @@ export async function exportCsv(req, res) {
   res.setHeader('Content-Disposition', 'attachment; filename="leads-selfie-games.csv"');
   return res.send(csv);
 }
+
+module.exports = { listUsers, stats, exportCsv };

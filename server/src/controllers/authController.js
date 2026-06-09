@@ -1,6 +1,6 @@
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { User } from '../models/User.js';
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const { User } = require('../models/User.js');
 
 function signToken(user) {
   return jwt.sign({ sub: user._id }, process.env.JWT_SECRET, {
@@ -10,7 +10,7 @@ function signToken(user) {
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export async function register(req, res) {
+async function register(req, res) {
   try {
     const { nombre, email, telefono, password } = req.body || {};
 
@@ -39,7 +39,7 @@ export async function register(req, res) {
   }
 }
 
-export async function login(req, res) {
+async function login(req, res) {
   try {
     const { email, password } = req.body || {};
     if (!email || !password) {
@@ -59,6 +59,8 @@ export async function login(req, res) {
   }
 }
 
-export async function me(req, res) {
+async function me(req, res) {
   return res.json({ user: req.user.toPublic() });
 }
+
+module.exports = { register, login, me };

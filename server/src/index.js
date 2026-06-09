@@ -1,11 +1,11 @@
-import 'dotenv/config';
-import express from 'express';
-import cors from 'cors';
-import mongoose from 'mongoose';
-import { connectDB } from './config/db.js';
-import authRoutes from './routes/auth.js';
-import gameRoutes from './routes/games.js';
-import adminRoutes from './routes/admin.js';
+require('dotenv/config');
+const express = require('express');
+const cors = require('cors');
+const mongoose = require('mongoose');
+const { connectDB } = require('./config/db.js');
+const authRoutes = require('./routes/auth.js');
+const gameRoutes = require('./routes/games.js');
+const adminRoutes = require('./routes/admin.js');
 
 const app = express();
 
