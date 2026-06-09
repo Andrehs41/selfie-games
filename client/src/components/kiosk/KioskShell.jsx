@@ -5,7 +5,7 @@ import SkipNextIcon from '@mui/icons-material/SkipNext';
 // Pensado para el tótem vertical (portrait) del stand.
 // `onNext` (opcional): muestra el botón "Siguiente jugador" para reiniciar la
 // sesión aunque el participante no termine los juegos (sus datos ya se guardaron).
-export default function KioskShell({ children, maxWidth = 'sm', onNext }) {
+export default function KioskShell({ children, maxWidth = 'sm', onNext, hideLogo = false }) {
   return (
     <Box
       sx={{
@@ -36,24 +36,26 @@ export default function KioskShell({ children, maxWidth = 'sm', onNext }) {
       )}
 
       {/* Logo sobre círculo blanco para que resalte en el fondo vívido */}
-      <Box
-        sx={{
-          mt: { xs: 4, sm: 6 },
-          mb: 1,
-          p: 1,
-          bgcolor: '#fff',
-          borderRadius: '50%',
-          boxShadow: '0 10px 30px rgba(0,0,0,0.18)',
-          display: 'inline-flex',
-        }}
-      >
+      {!hideLogo && (
         <Box
-          component="img"
-          src="/logo.png"
-          alt="By Mariana Zapata"
-          sx={{ width: { xs: 120, sm: 150 }, display: 'block', userSelect: 'none' }}
-        />
-      </Box>
+          sx={{
+            mt: { xs: 4, sm: 6 },
+            mb: 1,
+            p: 1,
+            bgcolor: '#fff',
+            borderRadius: '50%',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.18)',
+            display: 'inline-flex',
+          }}
+        >
+          <Box
+            component="img"
+            src="/logo.png"
+            alt="By Mariana Zapata"
+            sx={{ width: { xs: 120, sm: 150 }, display: 'block', userSelect: 'none' }}
+          />
+        </Box>
+      )}
 
       <Container
         maxWidth={maxWidth}

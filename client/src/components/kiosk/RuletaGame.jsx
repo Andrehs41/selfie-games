@@ -8,9 +8,13 @@ import api from '../../api/client.js';
 import { celebrate } from '../../utils/confetti.js';
 import { primeAudio, playTick, playWin } from '../../utils/sound.js';
 
-const SIZE = 340;
-const R = SIZE / 2;
+// Geometría interna del SVG (unidades del viewBox). El tamaño en pantalla se
+// controla por CSS (responsive y GIGANTE), manteniendo la geometría constante.
+const BASE = 400;
+const R = BASE / 2;
 const SEG = 45;
+// Tamaño en pantalla: lo más grande posible sin salirse del alto/ancho.
+const WHEEL_SIZE = 'min(94vw, 80vh, 900px)';
 const WIN_COLORS = ['#EC0E8E', '#F7941E', '#E87CB2', '#F4B6D2', '#F09A3E'];
 const RETRY_COLOR = '#E4DACE';
 
@@ -106,15 +110,16 @@ export default function RuletaGame({ participant, onDone }) {
   if (loading) {
     return (
       <Box sx={{ display: 'grid', placeItems: 'center', py: 8 }}>
-        <CircularProgress />
+        <CircularProgress sx={{ color: '#fff' }} />
       </Box>
     );
   }
 
   let winCount = 0;
+  const logoSize = 96;
 
   return (
-    <Stack spacing={3} alignItems="center">
+    <Stack spacing={2.5} alignItems="center">
       <Box sx={{ position: 'relative', width: '100%', textAlign: 'center' }}>
         <Typography variant="h3" sx={{ color: '#fff', textShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
           La Ruleta
@@ -131,62 +136,71 @@ export default function RuletaGame({ participant, onDone }) {
         </IconButton>
       </Box>
 
-      <Box sx={{ position: 'relative', width: SIZE, height: SIZE }}>
-        <Box
-          sx={{
-            position: 'absolute', top: -4, left: '50%', transform: 'translateX(-50%)', zIndex: 3,
-            width: 0, height: 0, borderLeft: '15px solid transparent', borderRight: '15px solid transparent',
-            borderTop: '30px solid #6B4E3D', filter: 'drop-shadow(0 3px 3px rgba(0,0,0,0.25))',
-          }}
-        />
-        <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`} style={{ display: 'block', filter: 'drop-shadow(0 14px 36px rgba(236,14,142,0.30))' }}>
-          <circle cx={R} cy={R} r={R - 2} fill="#FFFDFA" />
-          {Array.from({ length: 16 }).map((_, k) => {
-            const [bx, by] = pointFromTop(k * 22.5, R - 3);
-            return <circle key={k} cx={bx} cy={by} r={2.6} fill="#F7941E" />;
-          })}
-          <g ref={wheelRef} style={{ transformOrigin: `${R}px ${R}px` }}>
-            {segments.map((seg, i) => {
-              const isWin = seg.type === 'win';
-              const fill = isWin ? WIN_COLORS[winCount++ % WIN_COLORS.length] : RETRY_COLOR;
-              const mid = i * SEG + SEG / 2;
-              const [tx, ty] = pointFromTop(mid, R * 0.6);
-              let rot = mid - 90;
-              if (mid > 90 && mid < 270) rot += 180;
-              const lines = wrap(seg.label);
-              return (
-                <g key={seg.id}>
-                  <path d={slicePath(i)} fill={fill} stroke="#FFFDFA" strokeWidth="2.5" />
-                  <text
-                    transform={`rotate(${rot} ${tx} ${ty})`}
-                    x={tx}
-                    y={ty}
-                    fill={isWin ? '#FFFFFF' : '#9C8B7B'}
-                    fontSize="12.5"
-                    fontWeight="700"
-                    fontFamily="Poppins, sans-serif"
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                  >
-                    {lines.map((ln, li) => (
-                      <tspan key={li} x={tx} dy={li === 0 ? -(lines.length - 1) * 7 : 14}>
-                        {ln}
-                      </tspan>
-                    ))}
-                  </text>
-                </g>
-              );
+      {!result && (
+        <Box sx={{ position: 'relative', width: WHEEL_SIZE, height: WHEEL_SIZE, maxWidth: '100%' }}>
+          {/* Puntero */}
+          <Box
+            sx={{
+              position: 'absolute', top: -8, left: '50%', transform: 'translateX(-50%)', zIndex: 3,
+              width: 0, height: 0,
+              borderLeft: '22px solid transparent', borderRight: '22px solid transparent',
+              borderTop: '42px solid #6B4E3D', filter: 'drop-shadow(0 4px 4px rgba(0,0,0,0.3))',
+            }}
+          />
+          <svg width="100%" height="100%" viewBox={`0 0 ${BASE} ${BASE}`} style={{ display: 'block', filter: 'drop-shadow(0 18px 44px rgba(0,0,0,0.28))' }}>
+            <circle cx={R} cy={R} r={R - 2} fill="#FFFDFA" />
+            {Array.from({ length: 16 }).map((_, k) => {
+              const [bx, by] = pointFromTop(k * 22.5, R - 4);
+              return <circle key={k} cx={bx} cy={by} r={3.2} fill="#F7941E" />;
             })}
-          </g>
-          <circle cx={R} cy={R} r="30" fill="#FFFDFA" stroke="#F7941E" strokeWidth="3" />
-          <text x={R} y={R} fill="#EC0E8E" fontSize="16" fontWeight="700" fontFamily="Poppins, sans-serif" textAnchor="middle" dominantBaseline="central">
-            MZ
-          </text>
-        </svg>
-      </Box>
+            <g ref={wheelRef} style={{ transformOrigin: `${R}px ${R}px` }}>
+              {segments.map((seg, i) => {
+                const isWin = seg.type === 'win';
+                const fill = isWin ? WIN_COLORS[winCount++ % WIN_COLORS.length] : RETRY_COLOR;
+                const mid = i * SEG + SEG / 2;
+                const [tx, ty] = pointFromTop(mid, R * 0.6);
+                let rot = mid - 90;
+                if (mid > 90 && mid < 270) rot += 180;
+                const lines = wrap(seg.label);
+                return (
+                  <g key={seg.id}>
+                    <path d={slicePath(i)} fill={fill} stroke="#FFFDFA" strokeWidth="2.5" />
+                    <text
+                      transform={`rotate(${rot} ${tx} ${ty})`}
+                      x={tx}
+                      y={ty}
+                      fill={isWin ? '#FFFFFF' : '#9C8B7B'}
+                      fontSize="13"
+                      fontWeight="700"
+                      fontFamily="Poppins, sans-serif"
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                    >
+                      {lines.map((ln, li) => (
+                        <tspan key={li} x={tx} dy={li === 0 ? -(lines.length - 1) * 7 : 14}>
+                          {ln}
+                        </tspan>
+                      ))}
+                    </text>
+                  </g>
+                );
+              })}
+            </g>
+            {/* Hub central ESTÁTICO con el logo de la marca */}
+            <circle cx={R} cy={R} r="60" fill="#FFFFFF" stroke="#F7941E" strokeWidth="4" />
+            <image
+              href="/logo.png"
+              x={R - logoSize / 2}
+              y={R - logoSize / 2}
+              width={logoSize}
+              height={logoSize}
+            />
+          </svg>
+        </Box>
+      )}
 
       {result ? (
-        <Paper ref={resultRef} sx={{ p: 4, textAlign: 'center', width: '100%', maxWidth: 400 }}>
+        <Paper ref={resultRef} sx={{ p: 4, textAlign: 'center', width: '100%', maxWidth: 420 }}>
           <Stack spacing={1.5} alignItems="center">
             {result.prizeType === 'win' ? (
               <>
@@ -206,7 +220,7 @@ export default function RuletaGame({ participant, onDone }) {
           </Stack>
         </Paper>
       ) : (
-        <Button variant="contained" size="large" onClick={spin} disabled={spinning} startIcon={!spinning && <ReplayIcon />} sx={{ px: 6, py: 1.8, fontSize: 20 }}>
+        <Button variant="contained" size="large" onClick={spin} disabled={spinning} startIcon={!spinning && <ReplayIcon />} sx={{ px: 7, py: 2, fontSize: 22 }}>
           {spinning ? 'Girando…' : '¡Girar!'}
         </Button>
       )}

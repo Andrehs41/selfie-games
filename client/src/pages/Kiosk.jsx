@@ -39,7 +39,7 @@ export default function Kiosk() {
   const canSkip = step === 'select' || step === 'trivia' || step === 'ruleta';
 
   return (
-    <KioskShell maxWidth={wide ? 'md' : 'sm'} onNext={canSkip ? reset : undefined}>
+    <KioskShell maxWidth={wide ? 'md' : 'sm'} onNext={canSkip ? reset : undefined} hideLogo={step === 'ruleta'}>
       {step === 'form' && <StartForm onStarted={onStarted} />}
       {step === 'select' && <GameSelect participant={participant} done={done} onPick={setStep} />}
       {step === 'trivia' && <TriviaGame participant={participant} onDone={(r) => onGameDone('trivia', r)} />}
