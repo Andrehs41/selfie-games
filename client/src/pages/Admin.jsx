@@ -18,6 +18,13 @@ import {
   Box,
   CircularProgress,
   MenuItem,
+  IconButton,
+  Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -26,6 +33,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import QuizIcon from '@mui/icons-material/Quiz';
 import CasinoIcon from '@mui/icons-material/Casino';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import PageShell from '../components/PageShell.jsx';
 import api from '../api/client.js';
 import { exportCsv, exportPdf } from '../utils/exporters.js';
@@ -60,6 +68,8 @@ export default function Admin() {
   const [ruletaF, setRuletaF] = useState('todos');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [toDelete, setToDelete] = useState(null); // usuario a eliminar (o null)
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     Promise.all([api.get('/admin/users'), api.get('/admin/stats')])
@@ -93,6 +103,19 @@ export default function Admin() {
   useEffect(() => setPage(0), [q, triviaF, ruletaF]);
 
   const paged = filtered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
+  const confirmDelete = async () => {
+    if (!toDelete) return;
+    setDeleting(true);
+    try {
+      await api.delete(`/admin/users/${toDelete.id}`);
+      setUsers((prev) => prev.filter((u) => u.id !== toDelete.id));
+      setStats((s) => (s ? { ...s, total: Math.max(0, s.total - 1) } : s));
+      setToDelete(null);
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   return (
     <PageShell maxWidth="lg">
@@ -191,6 +214,7 @@ export default function Admin() {
                   <TableCell>Registrado</TableCell>
                   <TableCell align="center">Trivia</TableCell>
                   <TableCell>Ruleta</TableCell>
+                  <TableCell align="center">Acciones</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -218,11 +242,18 @@ export default function Admin() {
                         <Chip size="small" variant="outlined" label="—" />
                       )}
                     </TableCell>
+                    <TableCell align="center">
+                      <Tooltip title="Eliminar usuario">
+                        <IconButton size="small" color="error" onClick={() => setToDelete(u)}>
+                          <DeleteOutlineIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </TableCell>
                   </TableRow>
                 ))}
                 {!filtered.length && (
                   <TableRow>
-                    <TableCell colSpan={6} align="center" sx={{ py: 4, color: 'text.secondary' }}>
+                    <TableCell colSpan={7} align="center" sx={{ py: 4, color: 'text.secondary' }}>
                       Sin resultados
                     </TableCell>
                   </TableRow>
@@ -246,6 +277,24 @@ export default function Admin() {
           </TableContainer>
         </>
       )}
+
+      <Dialog open={Boolean(toDelete)} onClose={() => !deleting && setToDelete(null)}>
+        <DialogTitle>Eliminar usuario</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            ¿Seguro que quieres eliminar a <strong>{toDelete?.nombre}</strong> ({toDelete?.email})?
+            Podrá registrarse de nuevo con ese email. Esta acción no se puede deshacer.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setToDelete(null)} disabled={deleting}>
+            Cancelar
+          </Button>
+          <Button onClick={confirmDelete} color="error" variant="contained" disabled={deleting}>
+            {deleting ? 'Eliminando…' : 'Eliminar'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </PageShell>
   );
 }

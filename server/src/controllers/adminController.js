@@ -63,4 +63,16 @@ async function exportCsv(req, res) {
   return res.send(csv);
 }
 
-module.exports = { listUsers, stats, exportCsv };
+// DELETE /api/admin/users/:id → elimina un usuario (no admins).
+async function deleteUser(req, res) {
+  const { id } = req.params;
+  const user = await User.findById(id);
+  if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
+  if (user.role === 'admin') {
+    return res.status(403).json({ error: 'No se puede eliminar un administrador' });
+  }
+  await user.deleteOne();
+  return res.json({ ok: true, id });
+}
+
+module.exports = { listUsers, stats, exportCsv, deleteUser };

@@ -9,19 +9,10 @@ const adminRoutes = require('./routes/admin.js');
 
 const app = express();
 
-// CLIENT_ORIGIN admite varios orígenes separados por coma (p. ej. el dominio de
-// producción de Vercel + las preview URLs). '*' permite cualquiera.
-const allowedOrigins = (process.env.CLIENT_ORIGIN || '*').split(',').map((s) => s.trim());
-app.use(
-  cors({
-    origin(origin, cb) {
-      if (!origin || allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
-        return cb(null, true);
-      }
-      return cb(new Error(`Origen no permitido por CORS: ${origin}`));
-    },
-  })
-);
+// Juego público de marketing protegido por JWT (no por cookies), así que CORS
+// no es la barrera de seguridad: permitimos cualquier origen para evitar fallos
+// intermitentes (varias instancias, URLs preview, conexiones lentas, redeploys).
+app.use(cors());
 app.use(express.json());
 
 // Health check: indica también el estado de la DB para diagnóstico.
