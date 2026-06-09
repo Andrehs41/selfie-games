@@ -38,6 +38,35 @@ Ya tienes el cluster. Para producción:
 
 ---
 
+## 2-bis. Backend en Hostinger (alternativa a Render)
+
+Si usas el plan de Hostinger con Node.js, es buena opción: **no se "duerme"** como el
+plan free de Render, así que es más confiable para la expo en vivo.
+
+1. **Sube el código** (solo importa la carpeta `server`):
+   - Opción Git: hPanel → **Git** → conecta el repo `selfie-games`.
+   - Opción manual: sube `server/` por el Administrador de archivos / FTP (sin `node_modules`).
+2. **Crea la app Node** en hPanel → **Avanzado → Node.js** (o **Sitio web → Node.js**):
+   - **Versión de Node:** 18 o 20.
+   - **Application root:** la ruta donde quedó `server` (p. ej. `.../selfie-games/server`).
+   - **Application startup file:** `src/index.js`.
+   - **Application URL:** el dominio/subdominio (p. ej. `api.tudominio.com`).
+3. **Variables de entorno** (en la config de la app Node, NO subas el `.env`):
+   - `MONGODB_URI`, `JWT_SECRET`, `JWT_EXPIRES_IN=7d`, `CLIENT_ORIGIN=<url de Vercel>`.
+   - El `PORT` lo asigna Hostinger automáticamente (el código usa `process.env.PORT`).
+4. **Instala dependencias:** botón **Run NPM Install** del panel (o por SSH `npm install`
+   dentro del Application root).
+5. **Reinicia** la app desde el panel.
+6. **Crea el admin** (una vez, por SSH dentro del Application root):
+   `node src/scripts/seedAdmin.js admin@tucorreo.com TuClave "Nombre Admin"`
+   (si por SSH no toma las variables del panel, crea un `.env` en `server/` con ellas).
+7. **Atlas Network Access:** Hostinger suele dar una **IP fija** del hosting → whitelist
+   esa IP (más seguro que `0.0.0.0/0`). La encuentras en hPanel.
+8. Verifica `https://api.tudominio.com/api/health` → `{"ok":true}` y usa esa URL (con
+   `/api`) como `VITE_API_URL` en Vercel.
+
+> El `client/` NO se sube a Hostinger: va a Vercel (paso 3).
+
 ## 3. Frontend en Vercel
 
 1. En Vercel: **Add New → Project** y selecciona el repo.
