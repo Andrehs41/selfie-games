@@ -38,7 +38,8 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/selfie
 
 // El servidor escucha SIEMPRE (aunque Mongo falle), así /api/health responde y
 // podemos diagnosticar. La conexión a la DB ocurre aparte y no tumba el proceso.
-app.listen(PORT, '0.0.0.0', () => console.log(`🚀 API escuchando en puerto ${PORT}`));
+// Sin host fijo: Node maneja tanto puerto numérico como socket (Passenger).
+app.listen(PORT, () => console.log(`🚀 API escuchando en puerto ${PORT}`));
 
 connectDB(MONGODB_URI).catch((err) =>
   console.error('❌ No se pudo conectar a MongoDB:', err.message)
