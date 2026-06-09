@@ -1,0 +1,22 @@
+# Blueprint de Render (https://render.com). Importa este repo y Render leerá esto.
+# Las variables marcadas como sync:false se piden al crear el servicio.
+services:
+  - type: web
+    name: selfie-games-api
+    runtime: node
+    rootDir: server
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: CLIENT_ORIGIN
+        sync: false
