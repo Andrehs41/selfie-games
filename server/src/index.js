@@ -47,6 +47,12 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/selfie
 // Sin host fijo: Node maneja tanto puerto numérico como socket (Passenger).
 app.listen(PORT, () => console.log(`🚀 API escuchando en puerto ${PORT}`));
 
-connectDB(MONGODB_URI).catch((err) =>
-  console.error('❌ No se pudo conectar a MongoDB:', err.message)
-);
+// Reintenta la conexión hasta lograrla (p. ej. si Atlas tarda o el whitelist
+// se agregó después de arrancar). No tumba el HTTP.
+function connectWithRetry() {
+  connectDB(MONGODB_URI).catch((err) => {
+    console.error('❌ Mongo no conectó, reintento en 5s:', err.message);
+    setTimeout(connectWithRetry, 5000);
+  });
+}
+connectWithRetry();
