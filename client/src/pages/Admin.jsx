@@ -61,20 +61,20 @@ function fmtDate(d) {
 
 export default function Admin() {
   const [loading, setLoading] = useState(true);
-  const [users, setUsers] = useState([]);
+  const [rows, setRows] = useState([]);
   const [stats, setStats] = useState(null);
   const [q, setQ] = useState('');
   const [triviaF, setTriviaF] = useState('todos');
   const [ruletaF, setRuletaF] = useState('todos');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [toDelete, setToDelete] = useState(null); // usuario a eliminar (o null)
+  const [toDelete, setToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
-    Promise.all([api.get('/admin/users'), api.get('/admin/stats')])
-      .then(([u, s]) => {
-        setUsers(u.data.users);
+    Promise.all([api.get('/admin/participants'), api.get('/admin/stats')])
+      .then(([p, s]) => {
+        setRows(p.data.participants);
         setStats(s.data);
       })
       .finally(() => setLoading(false));
@@ -82,12 +82,9 @@ export default function Admin() {
 
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
-    return users.filter((u) => {
+    return rows.filter((u) => {
       if (term) {
-        const hit =
-          u.nombre.toLowerCase().includes(term) ||
-          u.email.toLowerCase().includes(term) ||
-          (u.telefono || '').includes(term);
+        const hit = u.nombre.toLowerCase().includes(term) || (u.telefono || '').includes(term);
         if (!hit) return false;
       }
       if (triviaF === 'jugada' && !u.trivia?.played) return false;
@@ -97,9 +94,8 @@ export default function Admin() {
       if (ruletaF === 'no' && u.ruleta?.played) return false;
       return true;
     });
-  }, [users, q, triviaF, ruletaF]);
+  }, [rows, q, triviaF, ruletaF]);
 
-  // Vuelve a la primera página cuando cambian los filtros.
   useEffect(() => setPage(0), [q, triviaF, ruletaF]);
 
   const paged = filtered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
@@ -108,8 +104,8 @@ export default function Admin() {
     if (!toDelete) return;
     setDeleting(true);
     try {
-      await api.delete(`/admin/users/${toDelete.id}`);
-      setUsers((prev) => prev.filter((u) => u.id !== toDelete.id));
+      await api.delete(`/admin/participants/${toDelete.id}`);
+      setRows((prev) => prev.filter((u) => u.id !== toDelete.id));
       setStats((s) => (s ? { ...s, total: Math.max(0, s.total - 1) } : s));
       setToDelete(null);
     } finally {
@@ -127,24 +123,14 @@ export default function Admin() {
         sx={{ mb: 3 }}
       >
         <Box>
-          <Typography variant="h4">Panel de administración</Typography>
-          <Typography color="text.secondary">Usuarios registrados y resultados de los juegos</Typography>
+          <Typography variant="h4">Participantes</Typography>
+          <Typography color="text.secondary">Registros y resultados de los juegos</Typography>
         </Box>
         <Stack direction="row" spacing={1}>
-          <Button
-            variant="outlined"
-            startIcon={<DownloadIcon />}
-            onClick={() => exportCsv(filtered)}
-            disabled={!filtered.length}
-          >
+          <Button variant="outlined" startIcon={<DownloadIcon />} onClick={() => exportCsv(filtered)} disabled={!filtered.length}>
             CSV
           </Button>
-          <Button
-            variant="contained"
-            startIcon={<PictureAsPdfIcon />}
-            onClick={() => exportPdf(filtered)}
-            disabled={!filtered.length}
-          >
+          <Button variant="contained" startIcon={<PictureAsPdfIcon />} onClick={() => exportPdf(filtered)} disabled={!filtered.length}>
             PDF
           </Button>
         </Stack>
@@ -158,23 +144,23 @@ export default function Admin() {
         <>
           <Grid container spacing={2} sx={{ mb: 3 }}>
             <Grid item xs={6} md={3}>
-              <StatCard icon={<PeopleIcon sx={{ color: '#fff' }} />} label="Registrados" value={stats.total} color="primary.main" />
+              <StatCard icon={<PeopleIcon sx={{ color: '#fff' }} />} label="Participantes" value={stats.total} color="primary.main" />
             </Grid>
             <Grid item xs={6} md={3}>
               <StatCard icon={<QuizIcon sx={{ color: '#fff' }} />} label="Jugaron trivia" value={stats.triviaJugada} color="secondary.main" />
             </Grid>
             <Grid item xs={6} md={3}>
-              <StatCard icon={<CasinoIcon sx={{ color: '#fff' }} />} label="Giraron ruleta" value={stats.ruletaJugada} color="#A8C3A2" />
+              <StatCard icon={<CasinoIcon sx={{ color: '#fff' }} />} label="Giraron ruleta" value={stats.ruletaJugada} color="#E87CB2" />
             </Grid>
             <Grid item xs={6} md={3}>
-              <StatCard icon={<EmojiEventsIcon sx={{ color: '#fff' }} />} label="Premiados" value={stats.premiados} color="#D9A06B" />
+              <StatCard icon={<EmojiEventsIcon sx={{ color: '#fff' }} />} label="Premiados" value={stats.premiados} color="#F7941E" />
             </Grid>
           </Grid>
 
           <Grid container spacing={2} sx={{ mb: 2 }}>
             <Grid item xs={12} md={6}>
               <TextField
-                placeholder="Buscar por nombre, email o teléfono…"
+                placeholder="Buscar por nombre o teléfono…"
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 fullWidth
@@ -207,9 +193,8 @@ export default function Admin() {
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
-                <TableRow sx={{ '& th': { fontWeight: 700, bgcolor: 'rgba(200,169,143,0.12)' } }}>
+                <TableRow sx={{ '& th': { fontWeight: 700, bgcolor: 'rgba(236,14,142,0.08)' } }}>
                   <TableCell>Nombre</TableCell>
-                  <TableCell>Email</TableCell>
                   <TableCell>Teléfono</TableCell>
                   <TableCell>Registrado</TableCell>
                   <TableCell align="center">Trivia</TableCell>
@@ -221,7 +206,6 @@ export default function Admin() {
                 {paged.map((u) => (
                   <TableRow key={u.id} hover>
                     <TableCell>{u.nombre}</TableCell>
-                    <TableCell>{u.email}</TableCell>
                     <TableCell>{u.telefono}</TableCell>
                     <TableCell>{fmtDate(u.createdAt)}</TableCell>
                     <TableCell align="center">
@@ -233,17 +217,13 @@ export default function Admin() {
                     </TableCell>
                     <TableCell>
                       {u.ruleta?.played ? (
-                        <Chip
-                          size="small"
-                          color={u.ruleta.prizeType === 'win' ? 'secondary' : 'default'}
-                          label={u.ruleta.prizeLabel}
-                        />
+                        <Chip size="small" color={u.ruleta.prizeType === 'win' ? 'secondary' : 'default'} label={u.ruleta.prizeLabel} />
                       ) : (
                         <Chip size="small" variant="outlined" label="—" />
                       )}
                     </TableCell>
                     <TableCell align="center">
-                      <Tooltip title="Eliminar usuario">
+                      <Tooltip title="Eliminar participante">
                         <IconButton size="small" color="error" onClick={() => setToDelete(u)}>
                           <DeleteOutlineIcon fontSize="small" />
                         </IconButton>
@@ -253,7 +233,7 @@ export default function Admin() {
                 ))}
                 {!filtered.length && (
                   <TableRow>
-                    <TableCell colSpan={7} align="center" sx={{ py: 4, color: 'text.secondary' }}>
+                    <TableCell colSpan={6} align="center" sx={{ py: 4, color: 'text.secondary' }}>
                       Sin resultados
                     </TableCell>
                   </TableRow>
@@ -279,11 +259,10 @@ export default function Admin() {
       )}
 
       <Dialog open={Boolean(toDelete)} onClose={() => !deleting && setToDelete(null)}>
-        <DialogTitle>Eliminar usuario</DialogTitle>
+        <DialogTitle>Eliminar participante</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            ¿Seguro que quieres eliminar a <strong>{toDelete?.nombre}</strong> ({toDelete?.email})?
-            Podrá registrarse de nuevo con ese email. Esta acción no se puede deshacer.
+            ¿Seguro que quieres eliminar a <strong>{toDelete?.nombre}</strong> ({toDelete?.telefono})? Esta acción no se puede deshacer.
           </DialogContentText>
         </DialogContent>
         <DialogActions>

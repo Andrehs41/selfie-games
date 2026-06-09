@@ -7,13 +7,13 @@ export default function ProtectedRoute({ children, adminOnly = false }) {
 
   if (loading) {
     return (
-      <Box sx={{ display: 'grid', placeItems: 'center', minHeight: '100vh' }}>
+      <Box sx={{ display: 'grid', placeItems: 'center', minHeight: '100dvh' }}>
         <CircularProgress color="primary" />
       </Box>
     );
   }
 
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/admin/login" replace />;
   if (adminOnly && user.role !== 'admin') return <Navigate to="/" replace />;
   return children;
 }

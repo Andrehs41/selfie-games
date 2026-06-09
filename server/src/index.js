@@ -4,7 +4,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const { connectDB } = require('./config/db.js');
 const authRoutes = require('./routes/auth.js');
-const gameRoutes = require('./routes/games.js');
+const playRoutes = require('./routes/play.js');
 const adminRoutes = require('./routes/admin.js');
 
 const app = express();
@@ -27,7 +27,7 @@ app.get('/api/health', (req, res) => {
   });
 });
 app.use('/api/auth', authRoutes);
-app.use('/api/games', gameRoutes);
+app.use('/api/play', playRoutes);
 app.use('/api/admin', adminRoutes);
 
 const PORT = process.env.PORT || 4000;

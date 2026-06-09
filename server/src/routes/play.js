@@ -1,19 +1,19 @@
 const { Router } = require('express');
-const { requireAuth } = require('../middleware/auth.js');
 const {
+  start,
   getTrivia,
   submitTrivia,
   getRuleta,
   spinRuleta,
-} = require('../controllers/gameController.js');
+} = require('../controllers/playController.js');
 
 const router = Router();
 
-router.use(requireAuth);
-
+// Todas públicas (kiosko del stand, sin login).
+router.post('/', start);
 router.get('/trivia', getTrivia);
-router.post('/trivia', submitTrivia);
+router.post('/:id/trivia', submitTrivia);
 router.get('/ruleta', getRuleta);
-router.post('/ruleta', spinRuleta);
+router.post('/:id/ruleta', spinRuleta);
 
 module.exports = router;

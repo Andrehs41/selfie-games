@@ -1,27 +1,25 @@
-const { User } = require('../models/User.js');
+const { Participant } = require('../models/Participant.js');
 
-// GET /api/admin/users → todos los usuarios (jugadores) con sus resultados.
-async function listUsers(req, res) {
-  const users = await User.find({ role: { $ne: 'admin' } }).sort({ createdAt: -1 }).lean();
-  const data = users.map((u) => ({
-    id: u._id,
-    nombre: u.nombre,
-    email: u.email,
-    telefono: u.telefono,
-    createdAt: u.createdAt,
-    trivia: u.games?.trivia || { played: false },
-    ruleta: u.games?.ruleta || { played: false },
+// GET /api/admin/participants → todos los participantes con sus resultados.
+async function listParticipants(req, res) {
+  const participants = await Participant.find().sort({ createdAt: -1 }).lean();
+  const data = participants.map((p) => ({
+    id: p._id,
+    nombre: p.nombre,
+    telefono: p.telefono,
+    createdAt: p.createdAt,
+    trivia: p.games?.trivia || { played: false },
+    ruleta: p.games?.ruleta || { played: false },
   }));
-  return res.json({ count: data.length, users: data });
+  return res.json({ count: data.length, participants: data });
 }
 
 // GET /api/admin/stats → métricas rápidas para el panel.
 async function stats(req, res) {
-  const notAdmin = { role: { $ne: 'admin' } };
-  const total = await User.countDocuments(notAdmin);
-  const triviaJugada = await User.countDocuments({ ...notAdmin, 'games.trivia.played': true });
-  const ruletaJugada = await User.countDocuments({ ...notAdmin, 'games.ruleta.played': true });
-  const premiados = await User.countDocuments({ ...notAdmin, 'games.ruleta.prizeType': 'win' });
+  const total = await Participant.countDocuments();
+  const triviaJugada = await Participant.countDocuments({ 'games.trivia.played': true });
+  const ruletaJugada = await Participant.countDocuments({ 'games.ruleta.played': true });
+  const premiados = await Participant.countDocuments({ 'games.ruleta.prizeType': 'win' });
   return res.json({ total, triviaJugada, ruletaJugada, premiados });
 }
 
@@ -30,12 +28,11 @@ const csvCell = (v) => {
   return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 };
 
-// GET /api/admin/users.csv → exporta los leads + resultados.
+// GET /api/admin/participants.csv → exporta leads + resultados.
 async function exportCsv(req, res) {
-  const users = await User.find({ role: { $ne: 'admin' } }).sort({ createdAt: -1 }).lean();
+  const participants = await Participant.find().sort({ createdAt: -1 }).lean();
   const headers = [
     'Nombre',
-    'Email',
     'Telefono',
     'Registrado',
     'Trivia jugada',
@@ -43,16 +40,15 @@ async function exportCsv(req, res) {
     'Ruleta jugada',
     'Ruleta premio',
   ];
-  const rows = users.map((u) =>
+  const rows = participants.map((p) =>
     [
-      u.nombre,
-      u.email,
-      u.telefono,
-      u.createdAt ? new Date(u.createdAt).toISOString() : '',
-      u.games?.trivia?.played ? 'Si' : 'No',
-      u.games?.trivia?.played ? `${u.games.trivia.score}/${u.games.trivia.total}` : '',
-      u.games?.ruleta?.played ? 'Si' : 'No',
-      u.games?.ruleta?.prizeLabel || '',
+      p.nombre,
+      p.telefono,
+      p.createdAt ? new Date(p.createdAt).toISOString() : '',
+      p.games?.trivia?.played ? 'Si' : 'No',
+      p.games?.trivia?.played ? `${p.games.trivia.score}/${p.games.trivia.total}` : '',
+      p.games?.ruleta?.played ? 'Si' : 'No',
+      p.games?.ruleta?.prizeLabel || '',
     ]
       .map(csvCell)
       .join(',')
@@ -63,16 +59,11 @@ async function exportCsv(req, res) {
   return res.send(csv);
 }
 
-// DELETE /api/admin/users/:id → elimina un usuario (no admins).
-async function deleteUser(req, res) {
-  const { id } = req.params;
-  const user = await User.findById(id);
-  if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
-  if (user.role === 'admin') {
-    return res.status(403).json({ error: 'No se puede eliminar un administrador' });
-  }
-  await user.deleteOne();
-  return res.json({ ok: true, id });
+// DELETE /api/admin/participants/:id
+async function deleteParticipant(req, res) {
+  const p = await Participant.findByIdAndDelete(req.params.id);
+  if (!p) return res.status(404).json({ error: 'Participante no encontrado' });
+  return res.json({ ok: true, id: req.params.id });
 }
 
-module.exports = { listUsers, stats, exportCsv, deleteUser };
+module.exports = { listParticipants, stats, exportCsv, deleteParticipant };

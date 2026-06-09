@@ -1,43 +1,47 @@
 import { createTheme } from '@mui/material/styles';
 
-// Paleta PROVISIONAL pastel / beige para Expobelleza.
-// Cuando el cliente entregue su identidad, basta con cambiar estos valores.
+// Paleta de marca By Mariana Zapata (extraída del logo + piezas de Expobelleza):
+// fucsia/magenta vívido, coral/naranja, rosa del logo, crema y texto marrón.
 const theme = createTheme({
   palette: {
     mode: 'light',
-    primary: { main: '#C8A98F', contrastText: '#3B2F2A' }, // beige tostado
-    secondary: { main: '#E8B4B8', contrastText: '#3B2F2A' }, // rosa pastel
-    success: { main: '#A8C3A2' }, // verde salvia suave
+    primary: { main: '#EC0E8E', contrastText: '#FFFFFF' }, // fucsia/magenta marca
+    secondary: { main: '#F7941E', contrastText: '#FFFFFF' }, // coral / naranja
+    success: { main: '#7FB77E' },
+    info: { main: '#29ABE2' }, // azul "Pabellón Azul" (acento puntual)
     background: {
-      default: '#FBF4EC', // crema
+      default: '#FAF3E6', // crema
       paper: '#FFFDFA',
     },
     text: {
-      primary: '#4A3F38',
+      primary: '#3B2F2A',
       secondary: '#8C7A6E',
     },
   },
-  shape: { borderRadius: 18 },
+  shape: { borderRadius: 20 },
   typography: {
     fontFamily: '"Poppins", "Segoe UI", sans-serif',
-    h1: { fontWeight: 600 },
-    h2: { fontWeight: 600 },
-    h3: { fontWeight: 600 },
+    h1: { fontWeight: 700 },
+    h2: { fontWeight: 700 },
+    h3: { fontWeight: 700 },
     h4: { fontWeight: 600 },
-    button: { textTransform: 'none', fontWeight: 600 },
+    button: { textTransform: 'none', fontWeight: 700 },
   },
   components: {
     MuiButton: {
       styleOverrides: {
-        root: { borderRadius: 999, paddingInline: 28, paddingBlock: 10 },
+        root: { borderRadius: 999, paddingInline: 30, paddingBlock: 12 },
       },
     },
     MuiPaper: {
       styleOverrides: {
-        root: { boxShadow: '0 12px 40px rgba(160, 130, 105, 0.15)' },
+        root: { boxShadow: '0 14px 44px rgba(236, 14, 142, 0.12)' },
       },
     },
   },
 });
+
+// Rosa del logo, útil para fondos/acentos suaves.
+export const LOGO_PINK = '#E87CB2';
 
 export default theme;
