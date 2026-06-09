@@ -38,34 +38,40 @@ Ya tienes el cluster. Para producción:
 
 ---
 
-## 2-bis. Backend en Hostinger (alternativa a Render)
+## 2-bis. Backend en Hostinger (auto-deploy desde GitHub)
 
-Si usas el plan de Hostinger con Node.js, es buena opción: **no se "duerme"** como el
-plan free de Render, así que es más confiable para la expo en vivo.
+Hostinger es buena opción: **no se "duerme"** como el plan free de Render, así que es más
+confiable para la expo en vivo.
 
-1. **Sube el código** (solo importa la carpeta `server`):
-   - Opción Git: hPanel → **Git** → conecta el repo `selfie-games`.
-   - Opción manual: sube `server/` por el Administrador de archivos / FTP (sin `node_modules`).
-2. **Crea la app Node** en hPanel → **Avanzado → Node.js** (o **Sitio web → Node.js**):
-   - **Versión de Node:** 18 o 20.
-   - **Application root:** la ruta donde quedó `server` (p. ej. `.../selfie-games/server`).
-   - **Application startup file:** `src/index.js`.
-   - **Application URL:** el dominio/subdominio (p. ej. `api.tudominio.com`).
-3. **Variables de entorno** (en la config de la app Node, NO subas el `.env`):
+Hostinger despliega desde la **raíz del repo** (no deja elegir la subcarpeta `server/`).
+Para eso el repo trae un **`package.json` en la raíz** que instala las dependencias del
+`server` y lo arranca. Así, compilando desde la raíz, se levanta el backend.
+
+Config en el panel de Hostinger (auto-deploy):
+
+1. **Repositorio:** `selfie-games`, rama `main`.
+2. **Preajuste del marco:** **NO Vite.** Elige **Node.js** (u "Otro/Ninguno"). Vite haría
+   una compilación *estática* y un backend Express necesita un proceso Node vivo.
+3. **Directorio raíz:** la **raíz del repo** (déjalo vacío / `.`), NO `client`.
+4. **Versión de Node:** 18, 20 o 22.
+5. **Comandos:**
+   - Build / Install: `npm install` (el `postinstall` instala las deps de `server/`).
+   - Start / arranque: `npm start` (ejecuta `node server/src/index.js`).
+   - Si pide un **archivo de inicio**: `server/src/index.js`.
+   - Directorio de salida: no aplica (es un servicio, no un sitio estático).
+6. **Variables de entorno** (en el panel, NO subas `.env`):
    - `MONGODB_URI`, `JWT_SECRET`, `JWT_EXPIRES_IN=7d`, `CLIENT_ORIGIN=<url de Vercel>`.
-   - El `PORT` lo asigna Hostinger automáticamente (el código usa `process.env.PORT`).
-4. **Instala dependencias:** botón **Run NPM Install** del panel (o por SSH `npm install`
-   dentro del Application root).
-5. **Reinicia** la app desde el panel.
-6. **Crea el admin** (una vez, por SSH dentro del Application root):
-   `node src/scripts/seedAdmin.js admin@tucorreo.com TuClave "Nombre Admin"`
-   (si por SSH no toma las variables del panel, crea un `.env` en `server/` con ellas).
-7. **Atlas Network Access:** Hostinger suele dar una **IP fija** del hosting → whitelist
-   esa IP (más seguro que `0.0.0.0/0`). La encuentras en hPanel.
-8. Verifica `https://api.tudominio.com/api/health` → `{"ok":true}` y usa esa URL (con
-   `/api`) como `VITE_API_URL` en Vercel.
+   - El `PORT` lo asigna Hostinger (el código usa `process.env.PORT`).
+7. **Atlas Network Access:** agrega la **IP fija** que te dé Hostinger (o `0.0.0.0/0`).
+8. **Crea el admin** una vez (por SSH, en la raíz del repo):
+   `node server/src/scripts/seedAdmin.js admin@tucorreo.com TuClave "Nombre Admin"`
+9. Verifica `https://selfieapi.daanagency.com/api/health` → `{"ok":true}` y usa esa URL
+   **con `/api`** (`https://selfieapi.daanagency.com/api`) como `VITE_API_URL` en Vercel.
 
-> El `client/` NO se sube a Hostinger: va a Vercel (paso 3).
+> El `client/` no se ejecuta en Hostinger (el backend no lo usa); el frontend va a Vercel.
+> Si el panel de Hostinger solo ofrece "sitio estático" (build → carpeta de salida) y no un
+> servicio Node persistente, ese modo NO puede correr Express: usa la opción de
+> **aplicación Node.js**.
 
 ## 3. Frontend en Vercel
 
