@@ -34,9 +34,12 @@ export default function Kiosk() {
   };
 
   const wide = step === 'select';
+  // El botón "Siguiente jugador" aparece cuando ya hay una sesión activa (sus
+  // datos ya se guardaron al iniciar), no en el form ni en la pantalla final.
+  const canSkip = step === 'select' || step === 'trivia' || step === 'ruleta';
 
   return (
-    <KioskShell maxWidth={wide ? 'md' : 'sm'}>
+    <KioskShell maxWidth={wide ? 'md' : 'sm'} onNext={canSkip ? reset : undefined}>
       {step === 'form' && <StartForm onStarted={onStarted} />}
       {step === 'select' && <GameSelect participant={participant} done={done} onPick={setStep} />}
       {step === 'trivia' && <TriviaGame participant={participant} onDone={(r) => onGameDone('trivia', r)} />}

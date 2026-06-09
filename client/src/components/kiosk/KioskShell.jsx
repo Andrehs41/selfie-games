@@ -1,8 +1,11 @@
-import { Box, Container, Link } from '@mui/material';
+import { Box, Container, Link, Button } from '@mui/material';
+import SkipNextIcon from '@mui/icons-material/SkipNext';
 
-// Marco del kiosko: fondo de marca + logo arriba, contenido centrado.
+// Marco del kiosko: fondo de marca vívido + logo arriba, contenido centrado.
 // Pensado para el tótem vertical (portrait) del stand.
-export default function KioskShell({ children, maxWidth = 'sm' }) {
+// `onNext` (opcional): muestra el botón "Siguiente jugador" para reiniciar la
+// sesión aunque el participante no termine los juegos (sus datos ya se guardaron).
+export default function KioskShell({ children, maxWidth = 'sm', onNext }) {
   return (
     <Box
       sx={{
@@ -10,18 +13,48 @@ export default function KioskShell({ children, maxWidth = 'sm' }) {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        background:
-          'radial-gradient(circle at 50% 0%, rgba(236,14,142,0.10) 0%, transparent 45%),' +
-          'radial-gradient(circle at 50% 100%, rgba(247,148,30,0.10) 0%, transparent 45%),' +
-          '#FAF3E6',
+        background: 'linear-gradient(160deg, #FF3DA6 0%, #EC0E8E 52%, #F7941E 135%)',
       }}
     >
+      {onNext && (
+        <Button
+          onClick={onNext}
+          startIcon={<SkipNextIcon />}
+          sx={{
+            position: 'fixed',
+            top: 14,
+            right: 14,
+            zIndex: 10,
+            bgcolor: 'rgba(255,255,255,0.92)',
+            color: 'primary.main',
+            '&:hover': { bgcolor: '#fff' },
+            boxShadow: 3,
+          }}
+        >
+          Siguiente jugador
+        </Button>
+      )}
+
+      {/* Logo sobre círculo blanco para que resalte en el fondo vívido */}
       <Box
-        component="img"
-        src="/logo.png"
-        alt="By Mariana Zapata"
-        sx={{ width: { xs: 130, sm: 170 }, mt: { xs: 4, sm: 6 }, mb: 1, userSelect: 'none' }}
-      />
+        sx={{
+          mt: { xs: 4, sm: 6 },
+          mb: 1,
+          p: 1,
+          bgcolor: '#fff',
+          borderRadius: '50%',
+          boxShadow: '0 10px 30px rgba(0,0,0,0.18)',
+          display: 'inline-flex',
+        }}
+      >
+        <Box
+          component="img"
+          src="/logo.png"
+          alt="By Mariana Zapata"
+          sx={{ width: { xs: 120, sm: 150 }, display: 'block', userSelect: 'none' }}
+        />
+      </Box>
+
       <Container
         maxWidth={maxWidth}
         sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', py: 3 }}
@@ -29,11 +62,10 @@ export default function KioskShell({ children, maxWidth = 'sm' }) {
         {children}
       </Container>
 
-      {/* Acceso discreto para el staff */}
       <Link
         href="/admin/login"
         underline="none"
-        sx={{ position: 'fixed', bottom: 8, right: 12, fontSize: 12, color: 'text.secondary', opacity: 0.45 }}
+        sx={{ position: 'fixed', bottom: 8, right: 12, fontSize: 12, color: 'rgba(255,255,255,0.7)' }}
       >
         admin
       </Link>
