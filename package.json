@@ -2,13 +2,20 @@
   "name": "selfie-games",
   "version": "1.0.0",
   "private": true,
-  "description": "Raíz del repo. Permite desplegar el backend (server/) en Hostinger cuando el deploy se hace desde la raíz (no se puede elegir subcarpeta).",
+  "type": "module",
+  "description": "Raíz del repo. Despliega el backend (server/) en Hostinger (preset Express, archivo de entrada server/src/index.js). Las dependencias viven aquí para que el runtime de Hostinger las encuentre en el node_modules de la raíz.",
   "engines": {
     "node": ">=18"
   },
   "scripts": {
-    "postinstall": "npm install --prefix server",
-    "build": "npm install --prefix server",
     "start": "node server/src/index.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.5.1"
   }
 }
