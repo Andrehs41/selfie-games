@@ -116,12 +116,16 @@ export default function RuletaGame({ participant, onDone }) {
   return (
     <Stack spacing={3} alignItems="center">
       <Box sx={{ position: 'relative', width: '100%', textAlign: 'center' }}>
-        <Typography variant="h3">La Ruleta</Typography>
-        <Typography color="text.secondary">{result ? '¡Listo!' : 'Gira y prueba tu suerte'}</Typography>
+        <Typography variant="h3" sx={{ color: '#fff', textShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
+          La Ruleta
+        </Typography>
+        <Typography sx={{ color: 'rgba(255,255,255,0.95)' }}>
+          {result ? '¡Listo!' : 'Gira y prueba tu suerte'}
+        </Typography>
         <IconButton
           onClick={() => setMuted((m) => !m)}
           aria-label={muted ? 'activar sonido' : 'silenciar'}
-          sx={{ position: 'absolute', top: 0, right: 0 }}
+          sx={{ position: 'absolute', top: 0, right: 0, color: '#fff' }}
         >
           {muted ? <VolumeOffIcon /> : <VolumeUpIcon />}
         </IconButton>

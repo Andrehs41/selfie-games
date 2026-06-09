@@ -5,19 +5,22 @@ import CasinoIcon from '@mui/icons-material/Casino';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { gsap } from 'gsap';
 
-function GameCard({ icon, title, description, color, done, onClick, innerRef }) {
+function GameCard({ icon, title, description, accent, done, onClick, innerRef }) {
   return (
-    <Card ref={innerRef} sx={{ height: '100%', bgcolor: color, opacity: done ? 0.7 : 1 }}>
+    <Card
+      ref={innerRef}
+      sx={{ height: '100%', bgcolor: 'background.paper', borderTop: `7px solid ${accent}`, opacity: done ? 0.9 : 1 }}
+    >
       <CardActionArea onClick={done ? undefined : onClick} disabled={done} sx={{ height: '100%', p: 1 }}>
         <CardContent sx={{ textAlign: 'center', py: 4 }}>
           <Stack spacing={1.5} alignItems="center">
-            {icon}
+            <Box sx={{ bgcolor: `${accent}1F`, borderRadius: '50%', p: 1.6, display: 'inline-flex' }}>{icon}</Box>
             <Typography variant="h4">{title}</Typography>
             <Typography color="text.secondary">{description}</Typography>
             {done ? (
               <Chip icon={<CheckCircleIcon />} label="¡Completado!" color="success" />
             ) : (
-              <Chip label="Toca para jugar" color="primary" variant="outlined" />
+              <Chip label="Toca para jugar" color="primary" />
             )}
           </Stack>
         </CardContent>
@@ -41,10 +44,10 @@ export default function GameSelect({ participant, done, onPick }) {
   return (
     <Box>
       <Stack spacing={1} sx={{ textAlign: 'center', mb: 4 }}>
-        <Typography variant="h3">
+        <Typography variant="h3" sx={{ color: '#fff', textShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
           ¡Hola, {participant?.nombre?.split(' ')[0]}!
         </Typography>
-        <Typography color="text.secondary" sx={{ fontSize: 18 }}>
+        <Typography sx={{ fontSize: 18, color: 'rgba(255,255,255,0.95)' }}>
           Juega los dos para terminar. Elige uno:
         </Typography>
       </Stack>
@@ -52,10 +55,10 @@ export default function GameSelect({ participant, done, onPick }) {
         <Grid item xs={12} sm={6}>
           <GameCard
             innerRef={(el) => (cardsRef.current[0] = el)}
-            icon={<QuizIcon sx={{ fontSize: 64, color: 'primary.main' }} />}
+            icon={<QuizIcon sx={{ fontSize: 60, color: 'primary.main' }} />}
             title="La Trivia"
             description="8 preguntas sobre la marca"
-            color="rgba(236,14,142,0.08)"
+            accent="#EC0E8E"
             done={done.trivia}
             onClick={() => onPick('trivia')}
           />
@@ -63,10 +66,10 @@ export default function GameSelect({ participant, done, onPick }) {
         <Grid item xs={12} sm={6}>
           <GameCard
             innerRef={(el) => (cardsRef.current[1] = el)}
-            icon={<CasinoIcon sx={{ fontSize: 64, color: 'secondary.main' }} />}
+            icon={<CasinoIcon sx={{ fontSize: 60, color: 'secondary.main' }} />}
             title="La Ruleta"
             description="Gira y gana premios"
-            color="rgba(247,148,30,0.10)"
+            accent="#F7941E"
             done={done.ruleta}
             onClick={() => onPick('ruleta')}
           />

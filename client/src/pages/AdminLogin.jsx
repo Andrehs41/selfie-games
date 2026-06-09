@@ -28,7 +28,15 @@ export default function AdminLogin() {
   };
 
   return (
-    <Box sx={{ minHeight: '100dvh', display: 'grid', placeItems: 'center', p: 2, bgcolor: 'background.default' }}>
+    <Box
+      sx={{
+        minHeight: '100dvh',
+        display: 'grid',
+        placeItems: 'center',
+        p: 2,
+        background: 'linear-gradient(160deg, #FF3DA6 0%, #EC0E8E 52%, #F7941E 135%)',
+      }}
+    >
       <Paper sx={{ p: { xs: 3, sm: 5 }, width: '100%', maxWidth: 420 }}>
         <Stack spacing={1} sx={{ textAlign: 'center', mb: 3 }}>
           <Box component="img" src="/logo.png" alt="By Mariana Zapata" sx={{ width: 90, mx: 'auto', mb: 1 }} />

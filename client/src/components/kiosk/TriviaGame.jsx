@@ -86,10 +86,14 @@ export default function TriviaGame({ participant, onDone }) {
   return (
     <Stack spacing={3}>
       <Box>
-        <Typography variant="body2" color="text.secondary" gutterBottom>
+        <Typography variant="body1" gutterBottom sx={{ color: '#fff', fontWeight: 600, textShadow: '0 1px 4px rgba(0,0,0,0.2)' }}>
           Pregunta {current + 1} de {questions.length}
         </Typography>
-        <LinearProgress variant="determinate" value={progress} sx={{ borderRadius: 99, height: 10 }} />
+        <LinearProgress
+          variant="determinate"
+          value={progress}
+          sx={{ borderRadius: 99, height: 12, bgcolor: 'rgba(255,255,255,0.4)' }}
+        />
       </Box>
       <Paper ref={questionRef} sx={{ p: { xs: 3, sm: 4 } }}>
         <Typography variant="h5" sx={{ mb: 3 }}>

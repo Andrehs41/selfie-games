@@ -13,7 +13,7 @@ export default function PageShell({ children, maxWidth = 'lg' }) {
   };
 
   return (
-    <Box sx={{ minHeight: '100dvh', bgcolor: 'background.default' }}>
+    <Box sx={{ minHeight: '100dvh', background: 'linear-gradient(180deg, #FCE3EF 0%, #FAF3E6 55%)' }}>
       <AppBar
         position="sticky"
         elevation={0}
