@@ -9,7 +9,7 @@ import { gsap } from 'gsap';
 const COLORS = ['#FFFFFF', '#FFD9EC', '#FFC59E', '#FFFFFF', '#FBB9DA'];
 
 // Decoración de fondo: corazones y estrellas (iconos SVG) flotando con GSAP.
-export default function FloatingDecor({ count = 30 }) {
+export default function FloatingDecor({ count = 25 }) {
   const ref = useRef(null);
 
   const items = useMemo(
