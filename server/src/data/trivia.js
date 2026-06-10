@@ -12,7 +12,7 @@ const TRIVIA_QUESTIONS = [
     question: '¿Qué productos lanzamos en Expobelleza 2025?',
     options: [
       'Mascarilla Capilar y Perfume de Coco',
-      'Perfume de Candy y Kit Viajero',
+      'Perfume Candy y Kit Viajero',
       'Perfume de Sandía y Tónico Capilar',
       'Shampoo For Men y Mascarilla',
     ],
