@@ -9,7 +9,7 @@ import { gsap } from 'gsap';
 const COLORS = ['#FFFFFF', '#FFD9EC', '#FFC59E', '#FFFFFF', '#FBB9DA'];
 
 // Decoración de fondo: corazones y estrellas (iconos SVG) flotando con GSAP.
-export default function FloatingDecor({ count = 18 }) {
+export default function FloatingDecor({ count = 30 }) {
   const ref = useRef(null);
 
   const items = useMemo(
@@ -21,7 +21,7 @@ export default function FloatingDecor({ count = 18 }) {
         left: Math.random() * 100,
         size: 16 + Math.random() * 42,
         color: COLORS[Math.floor(Math.random() * COLORS.length)],
-        opacity: 0.12 + Math.random() * 0.16,
+        opacity: 0.35 + Math.random() * 0.35,
         dur: 3 + Math.random() * 4,
         delay: Math.random() * 3,
         drift: (Math.random() * 2 - 1) * 28,
@@ -51,7 +51,7 @@ export default function FloatingDecor({ count = 18 }) {
       );
       tweens.push(
         gsap.to(el, {
-          opacity: it.opacity * 0.45,
+          opacity: it.opacity * 0.9,
           duration: it.dur * 0.8,
           delay: it.delay,
           repeat: -1,
