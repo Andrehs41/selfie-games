@@ -1,5 +1,6 @@
 import { Box, Container, Link, Button } from '@mui/material';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
+import FloatingDecor from './FloatingDecor.jsx';
 
 // Marco del kiosko: fondo de marca vívido + logo arriba, contenido centrado.
 // Pensado para el tótem vertical (portrait) del stand.
@@ -14,8 +15,11 @@ export default function KioskShell({ children, maxWidth = 'sm', onNext, hideLogo
         flexDirection: 'column',
         alignItems: 'center',
         background: 'linear-gradient(160deg, #FF3DA6 0%, #EC0E8E 52%, #F7941E 135%)',
+        overflow: 'hidden',
       }}
     >
+      <FloatingDecor />
+
       {onNext && (
         <Button
           onClick={onNext}
@@ -46,6 +50,8 @@ export default function KioskShell({ children, maxWidth = 'sm', onNext, hideLogo
             borderRadius: '50%',
             boxShadow: '0 10px 30px rgba(0,0,0,0.18)',
             display: 'inline-flex',
+            position: 'relative',
+            zIndex: 1,
           }}
         >
           <Box
@@ -59,7 +65,7 @@ export default function KioskShell({ children, maxWidth = 'sm', onNext, hideLogo
 
       <Container
         maxWidth={maxWidth}
-        sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', py: 3 }}
+        sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', py: 3, position: 'relative', zIndex: 1 }}
       >
         {children}
       </Container>
