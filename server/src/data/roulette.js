@@ -5,19 +5,19 @@
 // Orden = posición física en la rueda. Los 3 "Sigue intentando" se intercalan
 // (posiciones 2, 5 y 8) para que queden repartidos y no en un mismo bloque.
 //
-// Distribución pedida por el cliente (suma de pesos = 200):
-//   • Sigue intentando (×3)     → peso 40 c/u → 120/200 = 60%
-//   • Bonos (20% Off ×2)        → peso 25 c/u →  50/200 = 25%
-//   • Productos (Shampoo, Acond, Kit ×3) → peso 10 c/u → 30/200 = 15%
+// Distribución pedida por el cliente (suma de pesos = 600):
+//   • Sigue intentando (×3)     → peso 90 c/u  → 270/600 = 45%
+//   • Bonos (20% Off ×2)        → peso 105 c/u → 210/600 = 35%
+//   • Productos (Shampoo, Acond, Kit ×3) → peso 40 c/u → 120/600 = 20%
 const ROULETTE_SEGMENTS = [
-  { id: 1, label: 'Shampoo Viajero', type: 'win', weight: 10 },
-  { id: 2, label: 'Sigue intentando', type: 'retry', weight: 40 },
-  { id: 3, label: 'Acondicionador Viajero', type: 'win', weight: 10 },
-  { id: 4, label: 'Bono 20% Off', type: 'win', weight: 25 },
-  { id: 5, label: 'Sigue intentando', type: 'retry', weight: 40 },
-  { id: 6, label: 'Kit Viajero', type: 'win', weight: 10 },
-  { id: 7, label: 'Bono 20% Off', type: 'win', weight: 25 },
-  { id: 8, label: 'Sigue intentando', type: 'retry', weight: 40 },
+  { id: 1, label: 'Shampoo Viajero', type: 'win', weight: 40 },
+  { id: 2, label: 'Sigue intentando', type: 'retry', weight: 90 },
+  { id: 3, label: 'Acondicionador Viajero', type: 'win', weight: 40 },
+  { id: 4, label: 'Bono 20% Off', type: 'win', weight: 105 },
+  { id: 5, label: 'Sigue intentando', type: 'retry', weight: 90 },
+  { id: 6, label: 'Kit Viajero', type: 'win', weight: 40 },
+  { id: 7, label: 'Bono 20% Off', type: 'win', weight: 105 },
+  { id: 8, label: 'Sigue intentando', type: 'retry', weight: 90 },
 ];
 
 // Vista pública (sin pesos) para que el front dibuje la rueda.
