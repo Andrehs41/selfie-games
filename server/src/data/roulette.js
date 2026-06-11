@@ -8,7 +8,7 @@ const ROULETTE_SEGMENTS = [
   { id: 1, label: 'Shampoo Viajero', type: 'win', weight: 1 },
   { id: 2, label: 'Sigue intentando', type: 'retry', weight: 1 },
   { id: 3, label: 'Acondicionador Viajero', type: 'win', weight: 1 },
-  { id: 4, label: 'Bono 10% Off', type: 'win', weight: 1 },
+  { id: 4, label: 'Bono 20% Off', type: 'win', weight: 1 },
   { id: 5, label: 'Sigue intentando', type: 'retry', weight: 1 },
   { id: 6, label: 'Kit Viajero', type: 'win', weight: 1 },
   { id: 7, label: 'Bono 20% Off', type: 'win', weight: 1 },
