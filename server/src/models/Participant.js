@@ -7,6 +7,8 @@ const triviaResultSchema = new Schema(
     played: { type: Boolean, default: false },
     score: { type: Number, default: 0 },
     total: { type: Number, default: 0 },
+    prizeLabel: { type: String },
+    prizeType: { type: String, enum: ['win', 'retry'] },
     playedAt: { type: Date },
   },
   { _id: false }

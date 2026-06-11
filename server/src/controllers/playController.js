@@ -20,6 +20,14 @@ async function start(req, res) {
   return res.status(201).json({ participant: p.toPublic() });
 }
 
+// Premio de la trivia según aciertos (pedido del cliente):
+//   0–4 → sigue intentando | 5–7 → Bono 20% Off | 8 → Kit Viajero
+function triviaPrize(score) {
+  if (score >= 8) return { prizeLabel: 'Kit Viajero', prizeType: 'win' };
+  if (score >= 5) return { prizeLabel: 'Bono 20% Off', prizeType: 'win' };
+  return { prizeLabel: 'Sigue intentando', prizeType: 'retry' };
+}
+
 // GET /api/play/trivia → preguntas (mezcladas, sin respuesta correcta).
 function getTrivia(req, res) {
   return res.json({ questions: publicQuestions() });
@@ -39,9 +47,17 @@ async function submitTrivia(req, res) {
     if (correct) score += 1;
     return { id: q.id, correct, correctIndex: q.correct };
   });
-  p.games.trivia = { played: true, score, total: TRIVIA_QUESTIONS.length, playedAt: new Date() };
+  const prize = triviaPrize(score);
+  p.games.trivia = {
+    played: true,
+    score,
+    total: TRIVIA_QUESTIONS.length,
+    prizeLabel: prize.prizeLabel,
+    prizeType: prize.prizeType,
+    playedAt: new Date(),
+  };
   await p.save();
-  return res.json({ score, total: TRIVIA_QUESTIONS.length, detail, result: p.games.trivia });
+  return res.json({ score, total: TRIVIA_QUESTIONS.length, detail, prize, result: p.games.trivia });
 }
 
 // GET /api/play/ruleta → segmentos para dibujar la rueda.

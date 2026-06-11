@@ -11,7 +11,7 @@ export default function Finish({ participant, results, onReset }) {
 
   useEffect(() => {
     gsap.fromTo(ref.current, { scale: 0.85, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: 'back.out(1.7)' });
-    if (results.ruleta?.prizeType === 'win') celebrate();
+    if (results.trivia?.prize?.prizeType === 'win' || results.ruleta?.prizeType === 'win') celebrate();
     const t = setTimeout(onReset, AUTO_RESET_MS);
     return () => clearTimeout(t);
   }, []);
@@ -30,6 +30,14 @@ export default function Finish({ participant, results, onReset }) {
           <Typography variant="h4">
             {results.trivia ? `${results.trivia.score}/${results.trivia.total}` : '—'}
           </Typography>
+          {results.trivia?.prize &&
+            (results.trivia.prize.prizeType === 'win' ? (
+              <Chip label={results.trivia.prize.prizeLabel} color="secondary" size="small" sx={{ mt: 0.5 }} />
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                Sigue intentando
+              </Typography>
+            ))}
         </Box>
 
         <Box>

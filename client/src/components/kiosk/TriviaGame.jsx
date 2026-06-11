@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Paper, Typography, Stack, Button, LinearProgress, Box, CircularProgress } from '@mui/material';
+import { Paper, Typography, Stack, Button, LinearProgress, Box, CircularProgress, Chip } from '@mui/material';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import { gsap } from 'gsap';
 import api from '../../api/client.js';
@@ -31,7 +31,7 @@ export default function TriviaGame({ participant, onDone }) {
   useEffect(() => {
     if (result && resultRef.current) {
       gsap.fromTo(resultRef.current, { scale: 0.85, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: 'back.out(1.7)' });
-      if (result.score === result.total) celebrate();
+      if (result.prize?.prizeType === 'win') celebrate();
     }
   }, [result]);
 
@@ -46,7 +46,7 @@ export default function TriviaGame({ participant, onDone }) {
     setSubmitting(true);
     try {
       const res = await api.post(`/play/${participant.id}/trivia`, { answers: finalAnswers });
-      setResult({ score: res.data.score, total: res.data.total });
+      setResult({ score: res.data.score, total: res.data.total, prize: res.data.prize });
     } finally {
       setSubmitting(false);
     }
@@ -61,18 +61,28 @@ export default function TriviaGame({ participant, onDone }) {
   }
 
   if (result) {
+    const won = result.prize?.prizeType === 'win';
     return (
       <Paper ref={resultRef} sx={{ p: 5, textAlign: 'center' }}>
         <Stack spacing={2} alignItems="center">
-          <EmojiEventsIcon sx={{ fontSize: 72, color: 'secondary.main' }} />
+          <EmojiEventsIcon sx={{ fontSize: 72, color: won ? 'secondary.main' : 'text.disabled' }} />
           <Typography variant="h4">¡Trivia completada!</Typography>
           <Typography variant="h2" color="primary.main">
             {result.score}/{result.total}
           </Typography>
-          <Typography color="text.secondary">
-            {result.score === result.total ? '¡Perfecto! Conoces la marca 💖' : '¡Bien hecho!'}
-          </Typography>
-          <Button variant="contained" size="large" onClick={() => onDone(result)} sx={{ py: 1.6, px: 5, fontSize: 18 }}>
+          {won ? (
+            <>
+              <Typography color="text.secondary">¡Ganaste!</Typography>
+              <Chip
+                label={result.prize.prizeLabel}
+                color="secondary"
+                sx={{ fontSize: 18, py: 3, px: 2, fontWeight: 600 }}
+              />
+            </>
+          ) : (
+            <Typography variant="h6">¡Sigue intentando! 💖</Typography>
+          )}
+          <Button variant="contained" size="large" onClick={() => onDone(result)} sx={{ py: 1.6, px: 5, fontSize: 18, mt: 1 }}>
             Continuar
           </Button>
         </Stack>
