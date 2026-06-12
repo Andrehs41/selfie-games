@@ -66,6 +66,8 @@ export default function Admin() {
   const [q, setQ] = useState('');
   const [triviaF, setTriviaF] = useState('todos');
   const [ruletaF, setRuletaF] = useState('todos');
+  const [desde, setDesde] = useState('');
+  const [hasta, setHasta] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [toDelete, setToDelete] = useState(null);
@@ -92,11 +94,13 @@ export default function Admin() {
       if (ruletaF === 'gano' && u.ruleta?.prizeType !== 'win') return false;
       if (ruletaF === 'sinpremio' && !(u.ruleta?.played && u.ruleta?.prizeType === 'retry')) return false;
       if (ruletaF === 'no' && u.ruleta?.played) return false;
+      if (desde && new Date(u.createdAt) < new Date(desde + 'T00:00:00')) return false;
+      if (hasta && new Date(u.createdAt) > new Date(hasta + 'T23:59:59.999')) return false;
       return true;
     });
-  }, [rows, q, triviaF, ruletaF]);
+  }, [rows, q, triviaF, ruletaF, desde, hasta]);
 
-  useEffect(() => setPage(0), [q, triviaF, ruletaF]);
+  useEffect(() => setPage(0), [q, triviaF, ruletaF, desde, hasta]);
 
   const paged = filtered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
@@ -171,6 +175,26 @@ export default function Admin() {
                     </InputAdornment>
                   ),
                 }}
+              />
+            </Grid>
+            <Grid item xs={6} md={3}>
+              <TextField
+                label="Desde"
+                type="date"
+                value={desde}
+                onChange={(e) => setDesde(e.target.value)}
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+            <Grid item xs={6} md={3}>
+              <TextField
+                label="Hasta"
+                type="date"
+                value={hasta}
+                onChange={(e) => setHasta(e.target.value)}
+                fullWidth
+                InputLabelProps={{ shrink: true }}
               />
             </Grid>
             <Grid item xs={6} md={3}>
