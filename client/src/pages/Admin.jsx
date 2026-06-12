@@ -59,6 +59,15 @@ function fmtDate(d) {
   return new Date(d).toLocaleString('es-CO', { dateStyle: 'short', timeStyle: 'short' });
 }
 
+// Clave de día local (YYYY-MM-DD) y etiqueta legible para el selector.
+function dayKey(d) {
+  const x = new Date(d);
+  return `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`;
+}
+function dayLabel(key) {
+  return new Date(key + 'T00:00:00').toLocaleDateString('es-CO', { weekday: 'short', day: 'numeric', month: 'short' });
+}
+
 export default function Admin() {
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState([]);
@@ -66,8 +75,7 @@ export default function Admin() {
   const [q, setQ] = useState('');
   const [triviaF, setTriviaF] = useState('todos');
   const [ruletaF, setRuletaF] = useState('todos');
-  const [desde, setDesde] = useState('');
-  const [hasta, setHasta] = useState('');
+  const [dia, setDia] = useState('todos');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [toDelete, setToDelete] = useState(null);
@@ -94,13 +102,18 @@ export default function Admin() {
       if (ruletaF === 'gano' && u.ruleta?.prizeType !== 'win') return false;
       if (ruletaF === 'sinpremio' && !(u.ruleta?.played && u.ruleta?.prizeType === 'retry')) return false;
       if (ruletaF === 'no' && u.ruleta?.played) return false;
-      if (desde && new Date(u.createdAt) < new Date(desde + 'T00:00:00')) return false;
-      if (hasta && new Date(u.createdAt) > new Date(hasta + 'T23:59:59.999')) return false;
+      if (dia !== 'todos' && dayKey(u.createdAt) !== dia) return false;
       return true;
     });
-  }, [rows, q, triviaF, ruletaF, desde, hasta]);
+  }, [rows, q, triviaF, ruletaF, dia]);
 
-  useEffect(() => setPage(0), [q, triviaF, ruletaF, desde, hasta]);
+  // Días disponibles (con registros), del más reciente al más antiguo.
+  const days = useMemo(() => {
+    const set = new Set(rows.map((u) => dayKey(u.createdAt)));
+    return Array.from(set).sort().reverse();
+  }, [rows]);
+
+  useEffect(() => setPage(0), [q, triviaF, ruletaF, dia]);
 
   const paged = filtered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
@@ -162,7 +175,7 @@ export default function Admin() {
           </Grid>
 
           <Grid container spacing={2} sx={{ mb: 2 }}>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={12}>
               <TextField
                 placeholder="Buscar por nombre o teléfono…"
                 value={q}
@@ -177,34 +190,24 @@ export default function Admin() {
                 }}
               />
             </Grid>
-            <Grid item xs={6} md={3}>
-              <TextField
-                label="Desde"
-                type="date"
-                value={desde}
-                onChange={(e) => setDesde(e.target.value)}
-                fullWidth
-                InputLabelProps={{ shrink: true }}
-              />
+            <Grid item xs={12} sm={4} md={4}>
+              <TextField select label="Día" value={dia} onChange={(e) => setDia(e.target.value)} fullWidth>
+                <MenuItem value="todos">Todos los días</MenuItem>
+                {days.map((d) => (
+                  <MenuItem key={d} value={d} sx={{ textTransform: 'capitalize' }}>
+                    {dayLabel(d)}
+                  </MenuItem>
+                ))}
+              </TextField>
             </Grid>
-            <Grid item xs={6} md={3}>
-              <TextField
-                label="Hasta"
-                type="date"
-                value={hasta}
-                onChange={(e) => setHasta(e.target.value)}
-                fullWidth
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-            <Grid item xs={6} md={3}>
+            <Grid item xs={6} sm={4} md={4}>
               <TextField select label="Trivia" value={triviaF} onChange={(e) => setTriviaF(e.target.value)} fullWidth>
                 <MenuItem value="todos">Todas</MenuItem>
                 <MenuItem value="jugada">Jugaron</MenuItem>
                 <MenuItem value="no">No jugaron</MenuItem>
               </TextField>
             </Grid>
-            <Grid item xs={6} md={3}>
+            <Grid item xs={6} sm={4} md={4}>
               <TextField select label="Ruleta" value={ruletaF} onChange={(e) => setRuletaF(e.target.value)} fullWidth>
                 <MenuItem value="todos">Todas</MenuItem>
                 <MenuItem value="gano">Ganaron premio</MenuItem>
